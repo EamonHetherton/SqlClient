@@ -29,7 +29,7 @@ namespace Microsoft.Data.SqlClient
         // this field is accessed through reflection in Microsoft.Data.SqlClient.Tests.SqlParameterTests and should not be renamed or have the type changed without refactoring related tests
         private static Tristate s_legacyVarTimeZeroScaleBehaviour;
 
-#if !NETFRAMEWORK
+#if NET
         static LocalAppContextSwitches()
         {
             IAppContextSwitchOverridesSection appContextSwitch = AppConfigManager.FetchConfigurationSection<AppContextSwitchOverridesSection>(AppContextSwitchOverridesSection.Name);
@@ -110,7 +110,7 @@ namespace Microsoft.Data.SqlClient
 
         /// <summary>
         /// In System.Data.SqlClient and Microsoft.Data.SqlClient prior to 3.0.0 a field with type Timestamp/RowVersion
-        /// would return an empty byte array. This switch contols whether to preserve that behaviour on newer versions
+        /// would return an empty byte array. This switch controls whether to preserve that behaviour on newer versions
         /// of Microsoft.Data.SqlClient, if this switch returns false an appropriate null value will be returned.
         /// This app context switch defaults to 'false'.
         /// </summary>
@@ -167,7 +167,7 @@ namespace Microsoft.Data.SqlClient
             {
                 if (s_useMinimumLoginTimeout == Tristate.NotInitialized)
                 {
-                    if (AppContext.TryGetSwitch(UseMinimumLoginTimeoutString, out bool returnedValue) && returnedValue)
+                    if (!AppContext.TryGetSwitch(UseMinimumLoginTimeoutString, out bool returnedValue) || returnedValue)
                     {
                         s_useMinimumLoginTimeout = Tristate.True;
                     }

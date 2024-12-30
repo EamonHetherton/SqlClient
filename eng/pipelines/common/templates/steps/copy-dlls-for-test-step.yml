@@ -26,10 +26,8 @@ parameters:
     type: object
     default:
     - net462
-    - net6.0
     - net8.0
-    - netstandard2.0
-    - netstandard2.1
+    - net9.0
 
   - name: product
     default: MDS
@@ -80,7 +78,7 @@ steps:
             
         Write-Host "Artifacts fetched for testing"
         Get-Location
-      displayName: 'Prepare ${{ targetFramework }} Arifacts for Testing'
+      displayName: 'Prepare ${{ targetFramework }} Artifacts for Testing'
 
   - ${{ if eq(parameters.product, 'AKV') }}:
     - powershell: |
@@ -97,7 +95,7 @@ steps:
             
         Write-Host "Artifacts fetched for testing"
         Get-Location
-      displayName: 'Prepare ${{ targetFramework }} Arifacts for Testing'
+      displayName: 'Prepare ${{ targetFramework }} Artifacts for Testing'
 
 - powershell: |
     $software = '${{parameters.softwareFolder}}'

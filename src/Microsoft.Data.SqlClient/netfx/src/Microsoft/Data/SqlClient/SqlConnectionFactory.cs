@@ -72,7 +72,7 @@ namespace Microsoft.Data.SqlClient
 
                 // Pass DbConnectionPoolIdentity to SqlInternalConnectionTds if using integrated security.
                 // Used by notifications.
-                if (opt.IntegratedSecurity || opt.UsesCertificate || opt.Authentication == SqlAuthenticationMethod.ActiveDirectoryIntegrated)
+                if (opt.IntegratedSecurity || opt.Authentication == SqlAuthenticationMethod.ActiveDirectoryIntegrated)
                 {
                     if (pool != null)
                     {
@@ -92,8 +92,7 @@ namespace Microsoft.Data.SqlClient
                     redirectedUserInstance = true;
                     string instanceName;
 
-                    if ((null == pool) ||
-                         (null != pool && pool.Count <= 0))
+                    if (pool == null || (pool != null && pool.Count <= 0))
                     { // Non-pooled or pooled and no connections in the pool.
 
                         SqlInternalConnectionTds sseConnection = null;
@@ -109,12 +108,15 @@ namespace Microsoft.Data.SqlClient
                             // NOTE: Retrieve <UserInstanceName> here. This user instance name will be used below to connect to the Sql Express User Instance.
                             instanceName = sseConnection.InstanceName;
 
+                            // Set future transient fault handling based on connection options
+                            sqlOwningConnection._applyTransientFaultHandling = opt != null && opt.ConnectRetryCount > 0;
+
                             if (!instanceName.StartsWith("\\\\.\\", StringComparison.Ordinal))
                             {
                                 throw SQL.NonLocalSSEInstance();
                             }
 
-                            if (null != pool)
+                            if (pool != null)
                             { // Pooled connection - cache result
                                 SqlConnectionPoolProviderInfo providerInfo = (SqlConnectionPoolProviderInfo)pool.ProviderInfo;
                                 // No lock since we are already in creation mutex
@@ -123,7 +125,7 @@ namespace Microsoft.Data.SqlClient
                         }
                         finally
                         {
-                            if (null != sseConnection)
+                            if (sseConnection != null)
                             {
                                 sseConnection.Dispose();
                             }
@@ -142,7 +144,7 @@ namespace Microsoft.Data.SqlClient
                     opt = new SqlConnectionString(opt, instanceName, false /* user instance=false */, null /* do not modify the Enlist value */);
                     poolGroupProviderInfo = null; // null so we do not pass to constructor below...
                 }
-                result = new SqlInternalConnectionTds(identity, opt, key.Credential, poolGroupProviderInfo, "", null, redirectedUserInstance, userOpt, recoverySessionData, key.ServerCertificateValidationCallback, key.ClientCertificateRetrievalCallback, pool, key.AccessToken, key.OriginalNetworkAddressInfo, applyTransientFaultHandling: applyTransientFaultHandling, key.AccessTokenCallback);
+                result = new SqlInternalConnectionTds(identity, opt, key.Credential, poolGroupProviderInfo, "", null, redirectedUserInstance, userOpt, recoverySessionData, pool, key.AccessToken, applyTransientFaultHandling: applyTransientFaultHandling, key.AccessTokenCallback);
             }
             return result;
         }
@@ -196,7 +198,7 @@ namespace Microsoft.Data.SqlClient
                 }
 
                 poolingOptions = new DbConnectionPoolGroupOptions(
-                                                    opt.IntegratedSecurity || opt.UsesCertificate || opt.Authentication == SqlAuthenticationMethod.ActiveDirectoryIntegrated,
+                                                    opt.IntegratedSecurity || opt.Authentication == SqlAuthenticationMethod.ActiveDirectoryIntegrated,
                                                     opt.MinPoolSize,
                                                     opt.MaxPoolSize,
                                                     connectionTimeout,
@@ -229,7 +231,7 @@ namespace Microsoft.Data.SqlClient
         internal static SqlConnectionString FindSqlConnectionOptions(SqlConnectionPoolKey key)
         {
             SqlConnectionString connectionOptions = (SqlConnectionString)SingletonInstance.FindConnectionOptions(key);
-            if (null == connectionOptions)
+            if (connectionOptions == null)
             {
                 connectionOptions = new SqlConnectionString(key.ConnectionString);
             }
@@ -247,9 +249,9 @@ namespace Microsoft.Data.SqlClient
             SqlInternalConnectionSmi result = (SqlInternalConnectionSmi)smiContext.GetContextValue((int)SmiContextFactory.ContextKey.Connection);
 
             // context connections are automatically re-useable if they exist unless they've been doomed.
-            if (null == result || result.IsConnectionDoomed)
+            if (result == null || result.IsConnectionDoomed)
             {
-                if (null != result)
+                if (result != null)
                 {
                     result.Dispose();   // A doomed connection is a messy thing.  Dispose of it promptly in nearest receptacle.
                 }
@@ -266,7 +268,7 @@ namespace Microsoft.Data.SqlClient
         override internal DbConnectionPoolGroup GetConnectionPoolGroup(DbConnection connection)
         {
             SqlConnection c = (connection as SqlConnection);
-            if (null != c)
+            if (c != null)
             {
                 return c.PoolGroup;
             }
@@ -276,7 +278,7 @@ namespace Microsoft.Data.SqlClient
         override internal DbConnectionInternal GetInnerConnection(DbConnection connection)
         {
             SqlConnection c = (connection as SqlConnection);
-            if (null != c)
+            if (c != null)
             {
                 return c.InnerConnection;
             }
@@ -286,7 +288,7 @@ namespace Microsoft.Data.SqlClient
         override protected int GetObjectId(DbConnection connection)
         {
             SqlConnection c = (connection as SqlConnection);
-            if (null != c)
+            if (c != null)
             {
                 return c.ObjectID;
             }
@@ -296,7 +298,7 @@ namespace Microsoft.Data.SqlClient
         override internal void PermissionDemand(DbConnection outerConnection)
         {
             SqlConnection c = (outerConnection as SqlConnection);
-            if (null != c)
+            if (c != null)
             {
                 c.PermissionDemand();
             }
@@ -305,7 +307,7 @@ namespace Microsoft.Data.SqlClient
         override internal void SetConnectionPoolGroup(DbConnection outerConnection, DbConnectionPoolGroup poolGroup)
         {
             SqlConnection c = (outerConnection as SqlConnection);
-            if (null != c)
+            if (c != null)
             {
                 c.PoolGroup = poolGroup;
             }
@@ -314,7 +316,7 @@ namespace Microsoft.Data.SqlClient
         override internal void SetInnerConnectionEvent(DbConnection owningObject, DbConnectionInternal to)
         {
             SqlConnection c = (owningObject as SqlConnection);
-            if (null != c)
+            if (c != null)
             {
                 c.SetInnerConnectionEvent(to);
             }
@@ -323,7 +325,7 @@ namespace Microsoft.Data.SqlClient
         override internal bool SetInnerConnectionFrom(DbConnection owningObject, DbConnectionInternal to, DbConnectionInternal from)
         {
             SqlConnection c = (owningObject as SqlConnection);
-            if (null != c)
+            if (c != null)
             {
                 return c.SetInnerConnectionFrom(to, from);
             }
@@ -333,7 +335,7 @@ namespace Microsoft.Data.SqlClient
         override internal void SetInnerConnectionTo(DbConnection owningObject, DbConnectionInternal to)
         {
             SqlConnection c = (owningObject as SqlConnection);
-            if (null != c)
+            if (c != null)
             {
                 c.SetInnerConnectionTo(to);
             }

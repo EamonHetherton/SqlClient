@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-#if !NETSTANDARD2_0
-
 using System;
-using System.Runtime.Caching;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.Pkcs;
 using System.Threading;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Microsoft.Data.SqlClient
 {
@@ -16,7 +16,7 @@ namespace Microsoft.Data.SqlClient
     {
         #region Members
 
-        private static readonly MemoryCache rootSigningCertificateCache = new MemoryCache("RootSigningCertificateCache");
+        private static readonly MemoryCache rootSigningCertificateCache = new MemoryCache(new MemoryCacheOptions());
 
         #endregion
 
@@ -194,7 +194,7 @@ namespace Microsoft.Data.SqlClient
         private X509Certificate2Collection GetSigningCertificate(string attestationUrl, bool forceUpdate)
         {
             attestationUrl = GetAttestationUrl(attestationUrl);
-            X509Certificate2Collection signingCertificates = (X509Certificate2Collection)rootSigningCertificateCache[attestationUrl];
+            X509Certificate2Collection signingCertificates = rootSigningCertificateCache.Get<X509Certificate2Collection>(attestationUrl);
             if (forceUpdate || signingCertificates == null || AnyCertificatesExpired(signingCertificates))
             {
                 byte[] data = MakeRequest(attestationUrl);
@@ -202,17 +202,23 @@ namespace Microsoft.Data.SqlClient
 
                 try
                 {
-                    certificateCollection.Import(data);
+                    var s = new SignedCms();
+                    s.Decode(data);
+                    certificateCollection.AddRange(s.Certificates);
                 }
                 catch (CryptographicException exception)
                 {
                     throw SQL.AttestationFailed(string.Format(Strings.GetAttestationSigningCertificateFailedInvalidCertificate, attestationUrl), exception);
                 }
 
-                rootSigningCertificateCache.Add(attestationUrl, certificateCollection, DateTime.Now.AddDays(1));
+                MemoryCacheEntryOptions options = new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1)
+                };
+                rootSigningCertificateCache.Set<X509Certificate2Collection>(attestationUrl, certificateCollection, options);
             }
 
-            return (X509Certificate2Collection)rootSigningCertificateCache[attestationUrl];
+            return rootSigningCertificateCache.Get<X509Certificate2Collection>(attestationUrl);
         }
 
         // Return the endpoint for given attestation url
@@ -421,5 +427,3 @@ namespace Microsoft.Data.SqlClient
         #endregion
     }
 }
-
-#endif

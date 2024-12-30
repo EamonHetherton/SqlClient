@@ -239,7 +239,7 @@ namespace Microsoft.Data.SqlClient.Server
         /// <include file='../../../../../../../doc/snippets/Microsoft.Data.SqlClient.Server/SqlMetaData.xml' path='docs/members[@name="SqlMetaData"]/ctorNameDbTypeUserDefinedType/*' />
         // udt ctor without tvp extended properties
         public SqlMetaData(string name, SqlDbType dbType,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType)
@@ -250,7 +250,7 @@ namespace Microsoft.Data.SqlClient.Server
         /// <include file='../../../../../../../doc/snippets/Microsoft.Data.SqlClient.Server/SqlMetaData.xml' path='docs/members[@name="SqlMetaData"]/ctorNameDbTypeUserDefinedTypeServerTypeName/*' />
         // udt ctor without tvp extended properties
         public SqlMetaData(string name, SqlDbType dbType,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType, string serverTypeName)
@@ -263,7 +263,7 @@ namespace Microsoft.Data.SqlClient.Server
         public SqlMetaData(
             string name, 
             SqlDbType dbType,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType, 
@@ -357,7 +357,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale, 
             long locale, 
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType
@@ -388,7 +388,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale, 
             long localeId, 
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType, 
@@ -893,7 +893,7 @@ namespace Microsoft.Data.SqlClient.Server
         private void Construct(
             string name, 
             SqlDbType dbType,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType, 
@@ -913,7 +913,7 @@ namespace Microsoft.Data.SqlClient.Server
                 throw SQL.InvalidSqlDbTypeForConstructor(dbType);
             }
 
-            if (null == userDefinedType)
+            if (userDefinedType == null)
             {
                 throw ADP.ArgumentNull(nameof(userDefinedType));
             }
@@ -952,9 +952,9 @@ namespace Microsoft.Data.SqlClient.Server
                 throw SQL.InvalidSqlDbTypeForConstructor(dbType);
             }
 
-            if (null != database || null != owningSchema)
+            if (database != null || owningSchema != null)
             {
-                if (null == objectName)
+                if (objectName == null)
                 {
                     throw ADP.ArgumentNull(nameof(objectName));
                 }
@@ -974,7 +974,7 @@ namespace Microsoft.Data.SqlClient.Server
 
         private void AssertNameIsValid(string name)
         {
-            if (null == name)
+            if (name == null)
             {
                 throw ADP.ArgumentNull(nameof(name));
             }
@@ -1060,7 +1060,7 @@ namespace Microsoft.Data.SqlClient.Server
             if (SqlDbType.Char == SqlDbType || SqlDbType.NChar == SqlDbType)
             {
                 // Don't pad null values
-                if (null != value)
+                if (value != null)
                 {
                     // Pad if necessary
                     if (value.Length < MaxLength)
@@ -1078,7 +1078,7 @@ namespace Microsoft.Data.SqlClient.Server
             }
 
             // Handle null values after type check
-            if (null == value)
+            if (value == null)
             {
                 return null;
             }
@@ -1352,7 +1352,7 @@ namespace Microsoft.Data.SqlClient.Server
             {
                 //DBG.Assert(Max!=MaxLength, "SqlMetaData.Adjust(SqlChars): Fixed-length type with Max length!");
                 // Don't pad null values
-                if (null != value && !value.IsNull)
+                if (value != null && !value.IsNull)
                 {
                     // Pad fixed-length types
                     long oldLength = value.Length;
@@ -1389,7 +1389,7 @@ namespace Microsoft.Data.SqlClient.Server
             }
 
             // Handle null values after type check.
-            if (null == value || value.IsNull)
+            if (value == null || value.IsNull)
             {
                 return value;
             }
@@ -1410,7 +1410,7 @@ namespace Microsoft.Data.SqlClient.Server
             {
                 //DBG.Assert(Max!=MaxLength, "SqlMetaData.Adjust(SqlBytes): Fixed-length type with Max length!");
                 // Don't pad null values
-                if (null != value && !value.IsNull)
+                if (value != null && !value.IsNull)
                 {
                     // Pad fixed-length types
                     int oldLength = (int)value.Length;
@@ -1438,7 +1438,7 @@ namespace Microsoft.Data.SqlClient.Server
             }
 
             // Handle null values after type check.
-            if (null == value || value.IsNull)
+            if (value == null || value.IsNull)
             {
                 return value;
             }
@@ -1487,7 +1487,7 @@ namespace Microsoft.Data.SqlClient.Server
         public object Adjust(object value)
         {
             // Pass null references through
-            if (null == value)
+            if (value == null)
             {
                 return null;
             }
@@ -1943,7 +1943,7 @@ namespace Microsoft.Data.SqlClient.Server
             if (SqlDbType.Binary == SqlDbType || SqlDbType.Timestamp == SqlDbType)
             {
                 // Don't pad null values
-                if (null != value)
+                if (value != null)
                 {
                     // Pad fixed-length types
                     if (value.Length < MaxLength)
@@ -1961,7 +1961,7 @@ namespace Microsoft.Data.SqlClient.Server
             }
 
             // Handle null values after type check
-            if (null == value)
+            if (value == null)
             {
                 return null;
             }
@@ -2003,7 +2003,7 @@ namespace Microsoft.Data.SqlClient.Server
             if (SqlDbType.Char == SqlDbType || SqlDbType.NChar == SqlDbType)
             {
                 // Don't pad null values
-                if (null != value)
+                if (value != null)
                 {
                     // Pad fixed-length types
                     long oldLength = value.Length;
@@ -2032,7 +2032,7 @@ namespace Microsoft.Data.SqlClient.Server
             }
 
             // Handle null values after type check
-            if (null == value)
+            if (value == null)
             {
                 return null;
             }

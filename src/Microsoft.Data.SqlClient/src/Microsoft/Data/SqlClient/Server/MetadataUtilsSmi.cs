@@ -75,7 +75,7 @@ namespace Microsoft.Data.SqlClient.Server
             SqlDbType.Structured,           // System.Collections.Generic.IEnumerable<Microsoft.Data.SqlClient.Server.SqlDataRecord>
             SqlDbType.Time,                 // System.TimeSpan
             SqlDbType.DateTimeOffset,       // System.DateTimeOffset
-#if NET6_0_OR_GREATER
+#if NET
             SqlDbType.Date,                 // System.DateOnly
             SqlDbType.Time,                 // System.TimeOnly  
 #endif
@@ -90,7 +90,7 @@ namespace Microsoft.Data.SqlClient.Server
 
         private static Dictionary<Type, ExtendedClrTypeCode> CreateTypeToExtendedTypeCodeMap()
         {
-#if NET6_0_OR_GREATER
+#if NET
             int Count = 44;
 #else
             int Count = 42;
@@ -140,7 +140,7 @@ namespace Microsoft.Data.SqlClient.Server
                 { typeof(IEnumerable<SqlDataRecord>), ExtendedClrTypeCode.IEnumerableOfSqlDataRecord },
                 { typeof(TimeSpan), ExtendedClrTypeCode.TimeSpan },
                 { typeof(DateTimeOffset), ExtendedClrTypeCode.DateTimeOffset },
-#if NET6_0_OR_GREATER
+#if NET
                 { typeof(DateOnly), ExtendedClrTypeCode.DateOnly },
                 { typeof(TimeOnly), ExtendedClrTypeCode.TimeOnly },
 #endif
@@ -199,7 +199,7 @@ namespace Microsoft.Data.SqlClient.Server
             ExtendedClrTypeCode extendedCode = ExtendedClrTypeCode.Invalid;
 
             // fast-track null, which is valid for all types
-            if (null == value)
+            if (value == null)
             {
                 extendedCode = ExtendedClrTypeCode.Empty;
             }
@@ -256,7 +256,7 @@ namespace Microsoft.Data.SqlClient.Server
                             extendedCode = ExtendedClrTypeCode.Char;
                         break;
                     case SqlDbType.Date:
-#if NET6_0_OR_GREATER
+#if NET
                         if (value.GetType() == typeof(DateOnly))
                             extendedCode = ExtendedClrTypeCode.DateOnly;
                         else if (value.GetType() == typeof(DateTime))
@@ -343,7 +343,7 @@ namespace Microsoft.Data.SqlClient.Server
                         break;
                     case SqlDbType.Udt:
                         // Validate UDT type if caller gave us a type to validate against
-                        if (null == udtType || value.GetType() == udtType)
+                        if (udtType == null || value.GetType() == udtType)
                         {
                             extendedCode = ExtendedClrTypeCode.Object;
                         }
@@ -352,7 +352,7 @@ namespace Microsoft.Data.SqlClient.Server
                             extendedCode = ExtendedClrTypeCode.Invalid;
                         }
                         break;
-#if NET6_0_OR_GREATER
+#if NET
                     case SqlDbType.Time:
                         if (value.GetType() == typeof(TimeOnly))
                             extendedCode = ExtendedClrTypeCode.TimeOnly;
@@ -492,7 +492,7 @@ namespace Microsoft.Data.SqlClient.Server
                 // Split the input name. UdtTypeName is specified as single 3 part name.
                 // NOTE: ParseUdtTypeName throws if format is incorrect
                 string typeName = source.ServerTypeName;
-                if (null != typeName)
+                if (typeName != null)
                 {
                     string[] names = SqlParameter.ParseTypeName(typeName, true /* isUdtTypeName */);
 
@@ -572,7 +572,7 @@ namespace Microsoft.Data.SqlClient.Server
             if (column.DataType == typeof(SqlDecimal))
             {
                 // Must scan all values in column to determine best-fit precision & scale
-                Debug.Assert(null != parent);
+                Debug.Assert(parent != null);
                 scale = 0;
                 byte nonFractionalPrecision = 0; // finds largest non-Fractional portion of precision
                 foreach (DataRow row in parent.Rows)
@@ -617,7 +617,7 @@ namespace Microsoft.Data.SqlClient.Server
             else if (dbType == SqlDbType.Decimal)
             {
                 // Must scan all values in column to determine best-fit precision & scale
-                Debug.Assert(null != parent);
+                Debug.Assert(parent != null);
                 scale = 0;
                 byte nonFractionalPrecision = 0; // finds largest non-Fractional portion of precision
                 foreach (DataRow row in parent.Rows)
@@ -658,7 +658,7 @@ namespace Microsoft.Data.SqlClient.Server
 
             // In Net Core, since DataColumn.Locale is not accessible because it is internal and in a separate assembly, 
             // we try to get the Locale from the parent
-            CultureInfo columnLocale = ((null != parent) ? parent.Locale : CultureInfo.CurrentCulture);
+            CultureInfo columnLocale = parent != null ? parent.Locale : CultureInfo.CurrentCulture;
 
             return new SmiExtendedMetaData(
                                         dbType,

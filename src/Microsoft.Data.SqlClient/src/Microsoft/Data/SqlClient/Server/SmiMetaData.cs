@@ -229,7 +229,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale,
             long localeId,
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType
@@ -257,7 +257,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale,
             long localeId,
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType,
@@ -289,7 +289,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale,
             long localeId,
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType,
@@ -493,7 +493,7 @@ namespace Microsoft.Data.SqlClient.Server
             get
             {
                 // Fault-in UDT clr types on access if have assembly-qualified name
-                if (null == _clrType && SqlDbType.Udt == _databaseType && _udtAssemblyQualifiedName != null)
+                if (_clrType == null && SqlDbType.Udt == _databaseType && _udtAssemblyQualifiedName != null)
                 {
                     _clrType = Type.GetType(_udtAssemblyQualifiedName, true);
                 }
@@ -507,7 +507,7 @@ namespace Microsoft.Data.SqlClient.Server
             get
             {
                 // Fault-in UDT clr types on access if have assembly-qualified name
-                if (null == _clrType && SqlDbType.Udt == _databaseType && _udtAssemblyQualifiedName != null)
+                if (_clrType == null && SqlDbType.Udt == _databaseType && _udtAssemblyQualifiedName != null)
                 {
                     _clrType = Type.GetType(_udtAssemblyQualifiedName, false);
                 }
@@ -769,7 +769,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale,
             long localeId,
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType,
@@ -805,7 +805,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale,
             long localeId,
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType,
@@ -845,7 +845,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale,
             long localeId,
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType,
@@ -872,7 +872,7 @@ namespace Microsoft.Data.SqlClient.Server
                 extendedProperties
             )
         {
-            Debug.Assert(null == name || MaxNameLength >= name.Length, "Name is too long");
+            Debug.Assert(name == null || MaxNameLength >= name.Length, "Name is too long");
 
             _name = name;
             _typeSpecificNamePart1 = typeSpecificNamePart1;
@@ -922,7 +922,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale,
             long localeId,
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType,
@@ -964,7 +964,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale,
             long localeId,
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType,
@@ -1045,7 +1045,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale,
             long localeId,
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType,
@@ -1097,7 +1097,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale,
             long localeId,
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType,
@@ -1154,7 +1154,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale,
             long localeId,
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType,
@@ -1267,7 +1267,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale,
             long localeId,
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType,
@@ -1327,7 +1327,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale,
             long localeId,
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType,
@@ -1392,7 +1392,7 @@ namespace Microsoft.Data.SqlClient.Server
             byte scale,
             long localeId,
             SqlCompareOptions compareOptions,
-#if NET6_0_OR_GREATER
+#if NET
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
             Type userDefinedType,

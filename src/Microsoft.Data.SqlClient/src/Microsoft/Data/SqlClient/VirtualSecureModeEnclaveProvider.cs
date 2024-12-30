@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-#if !NETSTANDARD2_0
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -170,7 +168,11 @@ namespace Microsoft.Data.SqlClient
         public HealthReport(byte[] payload)
         {
             Size = payload.Length;
+#if NET9_0
+            Certificate = X509CertificateLoader.LoadCertificate(payload);
+#else
             Certificate = new X509Certificate2(payload);
+#endif
         }
 
         public int GetSizeInPayload()
@@ -457,7 +459,7 @@ namespace Microsoft.Data.SqlClient
         ENCLAVE_FLAG_DYNAMIC_DEBUG_ACTIVE = 0x00000004
     }
 
-    #endregion
+#endregion
 
     internal static class EnclaveHelpers
     {
@@ -470,5 +472,3 @@ namespace Microsoft.Data.SqlClient
         }
     }
 }
-
-#endif

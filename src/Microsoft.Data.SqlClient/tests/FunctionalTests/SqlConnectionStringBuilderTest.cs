@@ -102,24 +102,39 @@ namespace Microsoft.Data.SqlClient.Tests
         [InlineData("ServerSPN = server2")]
         [InlineData("Failover Partner SPN = server3")]
         [InlineData("FailoverPartnerSPN = server4")]
+        [InlineData("Context Connection = false")]
         public void ConnectionStringTests(string connectionString)
         {
             ExecuteConnectionStringTests(connectionString);
         }
 
+        public static readonly IEnumerable<object[]> ConnectionStringTestsNetFx_TestCases = new[]
+        {
+            new object[] { "Connection Reset = false" },
+            new object[] { "Network Library = dbmssocn" },
+            new object[] { "Network = dbnmpntw" },
+            new object[] { "Net = dbmsrpcn" },
+            new object[] { "TransparentNetworkIPResolution = false" },
+            new object[] { "Transparent Network IP Resolution = true" },
+        };
+
         [Theory]
-        [InlineData("Connection Reset = false")]
-        [InlineData("Context Connection = false")]
-        [InlineData("Network Library = dbmssocn")]
-        [InlineData("Network = dbnmpntw")]
-        [InlineData("Net = dbmsrpcn")]
-        [InlineData("TransparentNetworkIPResolution = false")]
-        [InlineData("Transparent Network IP Resolution = true")]
-        [SkipOnTargetFramework(~TargetFrameworkMonikers.NetFramework)]
-        public void ConnectionStringTestsNetFx(string connectionString)
+        [MemberData(nameof(ConnectionStringTestsNetFx_TestCases))]
+        #if NETFRAMEWORK
+        public void ConnectionStringTestsNetFx_OnNetFx_Success(string connectionString)
         {
             ExecuteConnectionStringTests(connectionString);
         }
+        #else
+        public void ConnectionStringTestsNetFx_OnNetCore_Throws(string connectionString)
+        {
+            // Act
+            Action action = () => _ = new SqlConnectionStringBuilder(connectionString);
+
+            // Assert
+            Assert.Throws<NotSupportedException>(action);
+        }
+        #endif
 
         [Fact]
         public void SetInvalidApplicationIntent_Throws()
